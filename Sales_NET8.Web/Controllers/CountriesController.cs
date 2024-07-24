@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Sales_NET8.Web.Data;
 using Sales_NET8.Web.Data.Entities;
@@ -58,9 +59,39 @@ namespace Sales_NET8.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(country);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                bool countryExists = await _context.Countries
+            .AnyAsync(c => c.Name == country.Name);
+
+                if (countryExists)
+                {
+                    // Adiciona um erro ao ModelState para exibir no formulário
+                    ModelState.AddModelError("Name", "Já existe um país com este nome.");
+                    return View(country);
+                }
+
+                try
+                {
+                    _context.Add(country);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (DbUpdateException ex)
+                {
+                    // Tratamento de exceção para duplicidade de chave
+                    if (ex.InnerException is SqlException sqlEx && sqlEx.Number == 2627)
+                    {
+                        ModelState.AddModelError("", "Ocorreu um erro ao guardar o país. Já existe um país com este nome.");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Ocorreu um erro ao guardar o país.");
+                    }
+                    return View(country);
+                }
+
+                //_context.Add(country);
+                //await _context.SaveChangesAsync();
+                //return RedirectToAction(nameof(Index));
             }
             return View(country);
         }
