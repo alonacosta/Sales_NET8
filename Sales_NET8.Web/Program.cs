@@ -14,6 +14,15 @@ namespace Sales_NET8.Web
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
+            //Add runtime compilation
+            builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
+
+            //Inject datacontext
+            builder.Services.AddDbContext<DataContext>(o =>
+            {
+                o.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+            });
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
