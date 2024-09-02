@@ -1,4 +1,4 @@
-﻿@model Sales_NET8.Web.Data.Entities.Country
+﻿@model Sales_NET8.Web.Data.Entities.Category
 
 @{
     ViewData["Title"] = "Apagar";
@@ -6,10 +6,10 @@
 
 <h1>Apagar</h1>
 
-<h3>Tem a certeza de que pretende apagar este país?</h3>
+<h3>Tem a certeza de que pretende apagar esta categoria?</h3>
 <div>
-    
-    <partial name="_CountryDetails" />
+   
+    <partial name="_CategoryDetails" />
     
     <form asp-action="Delete">
         <input type="hidden" asp-for="Id" />
